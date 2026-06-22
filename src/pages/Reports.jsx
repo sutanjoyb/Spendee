@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import {
+  FaChartPie,
+  FaWallet,
+  FaArrowDown,
+  FaArrowUp,
+  FaFileAlt,
+} from "react-icons/fa";
 
-import Header from "../components/common/Header";
 import EmptyState from "../components/common/EmptyState";
 import MonthlyFilter from "../components/filters/MonthlyFilter";
 import ExpenseChart from "../components/charts/ExpenseChart";
+import BottomNavigation from "../components/layout/BottomNavigation";
 
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -17,8 +24,7 @@ function Reports() {
     const savedTransactions =
       JSON.parse(localStorage.getItem("transactions")) || [];
 
-    const income =
-      Number(localStorage.getItem("monthlyIncome")) || 0;
+    const income = Number(localStorage.getItem("monthlyIncome")) || 0;
 
     setTransactions(savedTransactions);
     setMonthlyIncome(income);
@@ -30,56 +36,61 @@ function Reports() {
       : transactions.filter((transaction) => {
           const date = new Date(transaction.date);
 
-          const monthName = date.toLocaleString(
-            "default",
-            {
-              month: "long",
-            }
-          );
+          const monthName = date.toLocaleString("default", {
+            month: "long",
+          });
 
           return monthName === selectedMonth;
         });
 
   const creditAmount = filteredTransactions
-    .filter(
-      (transaction) => transaction.type === "credit"
-    )
-    .reduce(
-      (total, transaction) =>
-        total + Number(transaction.amount),
-      0
-    );
+    .filter((transaction) => transaction.type === "credit")
+    .reduce((total, transaction) => total + Number(transaction.amount), 0);
 
   const debitAmount = filteredTransactions
-    .filter(
-      (transaction) => transaction.type === "debit"
-    )
-    .reduce(
-      (total, transaction) =>
-        total + Number(transaction.amount),
-      0
-    );
+    .filter((transaction) => transaction.type === "debit")
+    .reduce((total, transaction) => total + Number(transaction.amount), 0);
 
-  const totalIncome =
-    monthlyIncome + creditAmount;
+  const totalIncome = monthlyIncome + creditAmount;
 
-  const remainingBalance =
-    totalIncome - debitAmount;
+  const remainingBalance = totalIncome - debitAmount;
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(to bottom, #f8fafc, #eef6ff)",
-        padding: "30px 0",
+        background: "linear-gradient(to bottom,#f8fafc,#eef6ff)",
+        padding: "30px 0 100px",
       }}
     >
       <Container>
-        <Header
-          title="Reports & Analytics"
-          subtitle="Track your spending patterns"
-        />
+        {/* App Title */}
+
+        <div className="text-center mb-4">
+          <h1
+            style={{
+              fontFamily: "Croissant One",
+              color: "#2563EB",
+              fontSize: "2.8rem",
+              marginBottom: "8px",
+            }}
+          >
+            Spendee
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "EB Garamond",
+              color: "#64748B",
+              fontSize: "1.2rem",
+              marginBottom: 0,
+            }}
+          >
+            Track easily. Spend wisely.
+          </p>
+        </div>
+
+        <BottomNavigation />
 
         {/* Month Filter */}
 
@@ -104,7 +115,7 @@ function Reports() {
           />
         ) : (
           <>
-            {/* Chart */}
+            {/* Financial Reports */}
 
             <Card
               className="border-0 shadow-sm mb-4"
@@ -113,15 +124,19 @@ function Reports() {
               }}
             >
               <Card.Body>
-                <h4
-                  className="text-center mb-4"
-                  style={{
-                    fontFamily: "Croissant One",
-                    color: "#2563EB",
-                  }}
-                >
-                  Expense Breakdown
-                </h4>
+                <div className="d-flex align-items-center justify-content-center gap-2 mb-4">
+                  <FaChartPie size={22} color="#2563EB" />
+
+                  <h3
+                    className="mb-0"
+                    style={{
+                      fontFamily: "Croissant One",
+                      color: "#2563EB",
+                    }}
+                  >
+                    Financial Reports
+                  </h3>
+                </div>
 
                 <ExpenseChart
                   totalSpent={debitAmount}
@@ -147,6 +162,7 @@ function Reports() {
                         color: "#64748B",
                       }}
                     >
+                      <FaWallet className="me-2" />
                       Total Income
                     </p>
 
@@ -176,6 +192,7 @@ function Reports() {
                         color: "#64748B",
                       }}
                     >
+                      <FaArrowDown className="me-2" />
                       Total Spent
                     </p>
 
@@ -205,6 +222,7 @@ function Reports() {
                         color: "#64748B",
                       }}
                     >
+                      <FaArrowUp className="me-2" />
                       Remaining Balance
                     </p>
 
@@ -214,9 +232,7 @@ function Reports() {
                         color: "#2563EB",
                       }}
                     >
-                      ₹ {formatCurrency(
-                        remainingBalance
-                      )}
+                      ₹ {formatCurrency(remainingBalance)}
                     </h2>
                   </Card.Body>
                 </Card>
@@ -232,15 +248,19 @@ function Reports() {
               }}
             >
               <Card.Body>
-                <h4
-                  className="mb-3"
-                  style={{
-                    fontFamily: "Croissant One",
-                    color: "#2563EB",
-                  }}
-                >
-                  Report Summary
-                </h4>
+                <div className="d-flex align-items-center gap-2 mb-3">
+                  <FaFileAlt color="#2563EB" />
+
+                  <h4
+                    className="mb-0"
+                    style={{
+                      fontFamily: "Croissant One",
+                      color: "#2563EB",
+                    }}
+                  >
+                    Report Summary
+                  </h4>
+                </div>
 
                 <p
                   style={{
@@ -248,8 +268,7 @@ function Reports() {
                     fontSize: "1.1rem",
                   }}
                 >
-                  Total Transactions:{" "}
-                  {filteredTransactions.length}
+                  Total Transactions: {filteredTransactions.length}
                 </p>
 
                 <p
@@ -261,9 +280,7 @@ function Reports() {
                   Credits Recorded:{" "}
                   {
                     filteredTransactions.filter(
-                      (transaction) =>
-                        transaction.type ===
-                        "credit"
+                      (transaction) => transaction.type === "credit",
                     ).length
                   }
                 </p>
@@ -277,9 +294,7 @@ function Reports() {
                   Debits Recorded:{" "}
                   {
                     filteredTransactions.filter(
-                      (transaction) =>
-                        transaction.type ===
-                        "debit"
+                      (transaction) => transaction.type === "debit",
                     ).length
                   }
                 </p>

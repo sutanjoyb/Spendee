@@ -1,18 +1,18 @@
 import { Card, Badge } from "react-bootstrap";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 import { formatCurrency } from "../../utils/formatCurrency";
 
 function TransactionCard({ transaction }) {
   const isDebit = transaction.type === "debit";
 
-  const transactionDate = new Date(transaction.date).toLocaleDateString(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    },
-  );
+  const transactionDate = new Date(
+    transaction.date
+  ).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
   return (
     <Card
@@ -50,19 +50,48 @@ function TransactionCard({ transaction }) {
           {/* Right Side */}
 
           <div className="text-end">
-            <h5
-              className="mb-1"
+            <div
               style={{
-                color: isDebit ? "#EF4444" : "#10B981",
-                fontFamily: "EB Garamond",
-                fontWeight: "700",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: "8px",
+                marginBottom: "6px",
               }}
             >
-              {isDebit ? "-" : "+"}₹{formatCurrency(transaction.amount)}
-            </h5>
+              {isDebit ? (
+                <FaArrowDown color="#EF4444" />
+              ) : (
+                <FaArrowUp color="#10B981" />
+              )}
 
-            <Badge bg={isDebit ? "danger" : "success"}>
-              {isDebit ? "Debit" : "Credit"}
+              <h5
+                className="mb-0"
+                style={{
+                  color: isDebit
+                    ? "#EF4444"
+                    : "#10B981",
+                  fontFamily: "EB Garamond",
+                  fontWeight: "700",
+                }}
+              >
+                ₹
+                {formatCurrency(
+                  transaction.amount
+                )}
+              </h5>
+            </div>
+
+            <Badge
+              bg={
+                isDebit
+                  ? "danger"
+                  : "success"
+              }
+            >
+              {isDebit
+                ? "Debit"
+                : "Credit"}
             </Badge>
           </div>
         </div>

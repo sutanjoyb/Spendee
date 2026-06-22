@@ -1,21 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 
-import Header from "../components/common/Header";
 import EmptyState from "../components/common/EmptyState";
 import MonthlyFilter from "../components/filters/MonthlyFilter";
 import TransactionCard from "../components/transactions/TransactionCard";
+import BottomNavigation from "../components/layout/BottomNavigation";
+
 import { exportTransactionsPDF } from "../utils/pdfExport";
 
 function Ledger() {
   const [transactions, setTransactions] = useState([]);
-
   const [searchTerm, setSearchTerm] = useState("");
-
   const [fromDate, setFromDate] = useState("");
-
   const [toDate, setToDate] = useState("");
-
   const [selectedMonth, setSelectedMonth] = useState("");
 
   useEffect(() => {
@@ -52,82 +49,144 @@ function Ledger() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(to bottom, #f8fafc, #eef6ff)",
+        background: "linear-gradient(to bottom,#f8fafc,#eef6ff)",
         padding: "30px 0",
       }}
     >
+      {" "}
       <Container>
-        <Header />
+        {/* App Title */}
+        <div className="text-center mb-4">
+          <h1
+            style={{
+              fontFamily: "Croissant One",
+              color: "#2563EB",
+              fontSize: "2.8rem",
+              marginBottom: "8px",
+            }}
+          >
+            Spendee
+          </h1>
 
-        {/* Filters */}
+          <p
+            style={{
+              fontFamily: "EB Garamond",
+              color: "#64748B",
+              fontSize: "1.2rem",
+              marginBottom: 0,
+            }}
+          >
+            Track easily. Spend wisely.
+          </p>
+        </div>
+
+        <BottomNavigation />
+
+        {/* Filter Section */}
 
         <Card
           className="border-0 shadow-sm mb-4"
           style={{
-            borderRadius: "24px",
+            borderRadius: "28px",
+            background: "linear-gradient(135deg,#ffffff,#f8fbff)",
           }}
         >
-          <Card.Body>
-            <Row className="g-3">
-              <Col xs={12} md={4}>
+          <Card.Body className="p-4">
+            <Row className="g-3 align-items-end">
+              <Col lg={4}>
                 <Form.Control
                   type="text"
-                  placeholder="Search transactions..."
+                  placeholder="Search by description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
-                    borderRadius: "14px",
+                    height: "55px",
+                    borderRadius: "16px",
+                    border: "1px solid #CBD5E1",
+                    fontFamily: "EB Garamond",
                   }}
                 />
               </Col>
 
-              <Col xs={12} md={4}>
+              <Col lg={3}>
                 <MonthlyFilter
                   selectedMonth={selectedMonth}
                   setSelectedMonth={setSelectedMonth}
                 />
               </Col>
 
-              <Col xs={6} md={2}>
+              <Col lg={2}>
+                <Form.Label
+                  style={{
+                    fontFamily: "EB Garamond",
+                    color: "#64748B",
+                    marginBottom: "6px",
+                  }}
+                >
+                  From
+                </Form.Label>
+
                 <Form.Control
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
                   style={{
-                    borderRadius: "14px",
+                    height: "55px",
+                    borderRadius: "16px",
+                    border: "1px solid #CBD5E1",
                   }}
                 />
               </Col>
 
-              <Col xs={6} md={2}>
+              <Col lg={2}>
+                <Form.Label
+                  style={{
+                    fontFamily: "EB Garamond",
+                    color: "#64748B",
+                    marginBottom: "6px",
+                  }}
+                >
+                  To
+                </Form.Label>
+
                 <Form.Control
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
                   style={{
-                    borderRadius: "14px",
+                    height: "55px",
+                    borderRadius: "16px",
+                    border: "1px solid #CBD5E1",
                   }}
                 />
               </Col>
-            </Row>
 
-            <div className="mt-3">
-              <Button
-                variant="outline-primary"
-                onClick={() =>
-                  exportTransactionsPDF(
-                    filteredTransactions,
-                    Number(localStorage.getItem("monthlyIncome")) || 0,
-                  )
-                }
-              >
-                Export PDF
-              </Button>
-            </div>
+              <Col lg={1}>
+                <Button
+                  className="w-100"
+                  variant="primary"
+                  style={{
+                    height: "55px",
+                    borderRadius: "16px",
+                    border: "none",
+                    fontFamily: "EB Garamond",
+                    fontWeight: "600",
+                  }}
+                  onClick={() =>
+                    exportTransactionsPDF(
+                      filteredTransactions,
+                      Number(localStorage.getItem("monthlyIncome")) || 0,
+                    )
+                  }
+                >
+                  PDF
+                </Button>
+              </Col>
+            </Row>
           </Card.Body>
         </Card>
 
-        {/* Transactions */}
+        {/* Transaction History */}
 
         <Card
           className="border-0 shadow-sm"
@@ -136,20 +195,50 @@ function Ledger() {
           }}
         >
           <Card.Body>
-            <h3
-              className="mb-4"
-              style={{
-                fontFamily: "Croissant One",
-                color: "#2563EB",
-              }}
-            >
-              Transaction History
-            </h3>
+            <div className="mb-4">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2
+                    style={{
+                      fontFamily: "Croissant One",
+                      color: "#2563EB",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    Transaction History
+                  </h2>
+
+                  <p
+                    style={{
+                      fontFamily: "EB Garamond",
+                      color: "#64748B",
+                      fontSize: "1.1rem",
+                      marginBottom: 0,
+                    }}
+                  >
+                    View and manage all your transactions
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    background: "#EFF6FF",
+                    color: "#2563EB",
+                    padding: "8px 16px",
+                    borderRadius: "999px",
+                    fontFamily: "EB Garamond",
+                    fontWeight: "600",
+                  }}
+                >
+                  {filteredTransactions.length} Records
+                </div>
+              </div>
+            </div>
 
             {filteredTransactions.length === 0 ? (
               <EmptyState
                 title="No Transactions Found"
-                message="Try changing the search term or date filters."
+                message="Try changing the search term or filters."
               />
             ) : (
               filteredTransactions.map((transaction) => (

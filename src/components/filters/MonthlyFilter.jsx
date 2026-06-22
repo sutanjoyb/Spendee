@@ -1,9 +1,6 @@
 import { Form } from "react-bootstrap";
 
-function MonthlyFilter({
-  selectedMonth,
-  setSelectedMonth,
-}) {
+function MonthlyFilter({ selectedMonth, setSelectedMonth }) {
   const months = [
     "January",
     "February",
@@ -20,43 +17,27 @@ function MonthlyFilter({
   ];
 
   return (
-    <div>
-      <Form.Label
-        style={{
-          fontFamily: "EB Garamond",
-          fontSize: "1.1rem",
-          color: "#64748B",
-        }}
-      >
-        Filter By Month
-      </Form.Label>
+    <Form.Select
+      value={selectedMonth}
+      onChange={(e) => setSelectedMonth(e.target.value)}
+      style={{
+        borderRadius: "14px",
+        height: "50px",
+        fontFamily: "EB Garamond",
+        border: "1px solid #CBD5E1",
+        boxShadow: "none",
+      }}
+    >
+      <option value="" disabled={selectedMonth !== ""}>
+        All Months
+      </option>
 
-      <Form.Select
-        value={selectedMonth}
-        onChange={(e) =>
-          setSelectedMonth(e.target.value)
-        }
-        style={{
-          height: "50px",
-          borderRadius: "14px",
-          fontFamily: "EB Garamond",
-          border: "1px solid #CBD5E1",
-        }}
-      >
-        <option value="">
-          All Months
+      {months.map((month) => (
+        <option key={month} value={month}>
+          {month}
         </option>
-
-        {months.map((month) => (
-          <option
-            key={month}
-            value={month}
-          >
-            {month}
-          </option>
-        ))}
-      </Form.Select>
-    </div>
+      ))}
+    </Form.Select>
   );
 }
 

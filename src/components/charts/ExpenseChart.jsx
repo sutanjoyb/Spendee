@@ -35,11 +35,15 @@ function ExpenseChart({ totalSpent, remainingBalance }) {
             cx="50%"
             cy="50%"
             outerRadius={130}
+            innerRadius={70}
             dataKey="value"
             label
           >
             {data.map((entry, index) => (
-              <Cell key={index} fill={COLORS[index]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
             ))}
           </Pie>
 

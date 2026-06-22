@@ -1,41 +1,40 @@
 import { Card } from "react-bootstrap";
+import { FaChartLine } from "react-icons/fa";
 
-function EmptyState({
-  title = "No Data Found",
-  message = "Nothing to display yet.",
-}) {
+function EmptyState({ title, message }) {
   return (
     <Card
-      className="border-0 shadow-sm"
+      className="border-0 shadow-sm text-center"
       style={{
         borderRadius: "24px",
       }}
     >
-      <Card.Body className="text-center py-5">
-        <div
+      <Card.Body className="py-5">
+        <FaChartLine
+          size={70}
+          color="#2563EB"
           style={{
-            fontSize: "4rem",
+            marginBottom: "20px",
+            opacity: 0.85,
           }}
-        >
-          📭
-        </div>
+        />
 
-        <h4
+        <h3
           style={{
             fontFamily: "Croissant One",
             color: "#2563EB",
-            marginTop: "15px",
+            marginBottom: "12px",
           }}
         >
           {title}
-        </h4>
+        </h3>
 
         <p
           style={{
             fontFamily: "EB Garamond",
+            fontSize: "1.15rem",
             color: "#64748B",
-            fontSize: "1.1rem",
-            marginTop: "10px",
+            marginBottom: 0,
           }}
         >
           {message}

@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
-import { Container, Card, Button, Form, Modal } from "react-bootstrap";
+import { Container, Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { FaHistory } from "react-icons/fa";
 
 import TransactionModal from "../components/transactions/TransactionModal";
 import TransactionList from "../components/transactions/TransactionList";
+
 import BalanceCard from "../components/dashboard/BalanceCard";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import WarningBanner from "../components/dashboard/WarningBanner";
-import Header from "../components/common/Header";
+
 import FloatingButton from "../components/common/FloatingButton";
-import { formatCurrency } from "../utils/formatCurrency";
+import BottomNavigation from "../components/layout/BottomNavigation";
 
 function Dashboard() {
   const navigate = useNavigate();
 
   const [monthlyIncome, setMonthlyIncome] = useState(0);
-
   const [transactions, setTransactions] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const [showMonthResetModal, setShowMonthResetModal] = useState(false);
 
@@ -66,7 +68,6 @@ function Dashboard() {
     const income = Number(newMonthIncome);
 
     setMonthlyIncome(income);
-
     setTransactions([]);
 
     localStorage.setItem("monthlyIncome", income);
@@ -76,7 +77,6 @@ function Dashboard() {
     localStorage.setItem("lastResetMonth", currentMonth);
 
     setShowMonthResetModal(false);
-
     setNewMonthIncome("");
   };
 
@@ -97,32 +97,35 @@ function Dashboard() {
       style={{
         minHeight: "100vh",
         background: "linear-gradient(to bottom,#f8fafc,#eef6ff)",
+        paddingBottom: "90px",
       }}
     >
-      <Container fluid className="py-4 px-3 px-md-5">
-        <Header />
-
-        {/* Navigation */}
-
-        <div className="d-flex justify-content-center gap-3 mb-4 flex-wrap">
-          <Button variant="outline-primary" onClick={() => navigate("/ledger")}>
-            Ledger
-          </Button>
-
-          <Button
-            variant="outline-success"
-            onClick={() => navigate("/reports")}
+      <Container className="py-4">
+        <div className="text-center mb-4">
+          <h1
+            style={{
+              fontFamily: "Croissant One",
+              color: "#2563EB",
+              fontSize: "3rem",
+            }}
           >
-            Reports
-          </Button>
+            Spendee
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "EB Garamond",
+              color: "#64748B",
+              fontSize: "1.2rem",
+            }}
+          >
+            Track easily. Spend wisely.
+          </p>
         </div>
-
-        {/* Balance Card */}
-
+        <BottomNavigation />
+        {/* Balance */}
         <BalanceCard remainingBalance={remainingBalance} />
-
-        {/* Start New Month Button */}
-
+        {/* New Month */}
         {canStartNewMonth && (
           <div className="text-center mb-4">
             <Button
@@ -133,54 +136,93 @@ function Dashboard() {
             </Button>
           </div>
         )}
-
+        {/* Warning */}
         <WarningBanner remainingBalance={remainingBalance} />
-
+        {/* Summary */}
         <SummaryCards totalIncome={totalIncome} totalSpent={totalSpent} />
+        {/* History Button */}
+        <div className="d-flex justify-content-center mt-5 mb-4">
+          <Button
+            onClick={() => setShowHistory(true)}
+            className="d-inline-flex justify-content-center align-items-center gap-2"
+            style={{
+              background: "linear-gradient(135deg,#3B82F6,#2563EB)",
+              border: "none",
+              borderRadius: "50px",
+              padding: "12px 28px",
+              fontFamily: "EB Garamond",
+              fontSize: "1.1rem",
+              fontWeight: "600",
+              boxShadow: "0 8px 20px rgba(37,99,235,0.25)",
+            }}
+          >
+            <FaHistory />
+            <span>Recent Activity</span>
+          </Button>
+        </div>
 
-        {/* Recent Activity */}
-
-        <Card
-          className="border-0 mt-5 shadow-sm"
-          style={{
-            borderRadius: "24px",
-          }}
-        >
-          <Card.Body>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h4
-                style={{
-                  fontFamily: "EB Garamond",
-                }}
-              >
-                Recent Activity
-              </h4>
-
-              <Button
-                size="sm"
-                variant="outline-primary"
-                onClick={() => navigate("/ledger")}
-              >
-                View All
-              </Button>
-            </div>
-
-            <TransactionList transactions={transactions.slice(0, 5)} />
-          </Card.Body>
-        </Card>
-
+        {/* Add Transaction */}
         <FloatingButton onClick={() => setShowModal(true)} />
-
-        {/* Transaction Modal */}
-
         <TransactionModal
           show={showModal}
           handleClose={() => setShowModal(false)}
           addTransaction={addTransaction}
         />
+        {/* Recent Activity Modal */}
+        <Modal
+          show={showHistory}
+          onHide={() => setShowHistory(false)}
+          size="lg"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title
+              style={{
+                fontFamily: "Croissant One",
+                color: "#2563EB",
+              }}
+            >
+              Recent Activity
+            </Modal.Title>
+          </Modal.Header>
 
-        {/* Monthly Reset Modal */}
+          <Modal.Body
+            style={{
+              maxHeight: "70vh",
+              overflowY: "auto",
+            }}
+          >
+            <TransactionList transactions={transactions.slice(0, 5)} />
+          </Modal.Body>
 
+          <Modal.Footer>
+            <Button
+              variant="outline-primary"
+              style={{
+                fontFamily: "EB Garamond",
+                borderRadius: "12px",
+              }}
+              onClick={() => {
+                setShowHistory(false);
+                navigate("/ledger");
+              }}
+            >
+              View Full Ledger
+            </Button>
+
+            <Button
+              variant="secondary"
+              style={{
+                fontFamily: "EB Garamond",
+                borderRadius: "12px",
+              }}
+              onClick={() => setShowHistory(false)}
+            >
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* Month Reset Modal */}
         <Modal
           show={showMonthResetModal}
           onHide={() => setShowMonthResetModal(false)}
@@ -221,8 +263,8 @@ function Dashboard() {
                 fontFamily: "EB Garamond",
               }}
             >
-              This will reset Total Income, Total Spent, Balance and
-              Transactions for the new month.
+              This will reset all transactions and start a fresh month with the
+              new income.
             </small>
           </Modal.Body>
 
