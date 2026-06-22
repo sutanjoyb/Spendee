@@ -1,42 +1,26 @@
 import { useState } from "react";
-import {
-  Form,
-  Button,
-  ToggleButton,
-  ButtonGroup,
-  Card,
-} from "react-bootstrap";
+import { Form, Button, ToggleButton, ButtonGroup, Card } from "react-bootstrap";
 
-function TransactionForm({
-  addTransaction,
-  handleClose,
-}) {
-  const today = new Date()
-    .toISOString()
-    .split("T")[0];
+function TransactionForm({ addTransaction, handleClose }) {
+  const today = new Date().toISOString().split("T")[0];
 
-  const [amount, setAmount] =
-    useState("");
+  const [amount, setAmount] = useState("");
 
-  const [type, setType] =
-    useState("debit");
+  const [type, setType] = useState("debit");
 
-  const [date, setDate] =
-    useState(today);
+  const [date, setDate] = useState(today);
 
-  const [description, setDescription] =
-    useState("");
+  const [description, setDescription] = useState("");
+
+  const [category, setCategory] = useState("Other");
+
+  const [recurring, setRecurring] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (
-      !amount ||
-      !description.trim()
-    ) {
-      alert(
-        "Please fill all required fields"
-      );
+    if (!amount || !description.trim()) {
+      alert("Please fill all required fields");
       return;
     }
 
@@ -46,6 +30,8 @@ function TransactionForm({
       type,
       date,
       description,
+      category,
+      recurring,
     };
 
     addTransaction(newTransaction);
@@ -54,6 +40,8 @@ function TransactionForm({
     setDescription("");
     setType("debit");
     setDate(today);
+    setCategory("Other");
+    setRecurring(false);
 
     handleClose();
   };
@@ -68,13 +56,10 @@ function TransactionForm({
         }}
       >
         <Card.Body>
-          {/* Amount */}
-
           <Form.Group className="mb-4">
             <Form.Label
               style={{
-                fontFamily:
-                  "EB Garamond",
+                fontFamily: "EB Garamond",
                 fontSize: "1.2rem",
                 color: "#475569",
               }}
@@ -86,32 +71,23 @@ function TransactionForm({
               type="number"
               placeholder="₹ 0.00"
               value={amount}
-              onChange={(e) =>
-                setAmount(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setAmount(e.target.value)}
               style={{
                 height: "70px",
                 fontSize: "2rem",
                 textAlign: "center",
                 borderRadius: "16px",
-                border:
-                  "2px solid #E2E8F0",
-                fontFamily:
-                  "EB Garamond",
+                border: "2px solid #E2E8F0",
+                fontFamily: "EB Garamond",
                 fontWeight: "600",
               }}
             />
           </Form.Group>
 
-          {/* Transaction Type */}
-
           <Form.Group className="mb-4">
             <Form.Label
               style={{
-                fontFamily:
-                  "EB Garamond",
+                fontFamily: "EB Garamond",
                 fontSize: "1.2rem",
                 color: "#475569",
               }}
@@ -124,22 +100,9 @@ function TransactionForm({
                 id="debit"
                 type="radio"
                 value="debit"
-                checked={
-                  type === "debit"
-                }
-                onChange={(e) =>
-                  setType(
-                    e.currentTarget.value
-                  )
-                }
-                variant={
-                  type === "debit"
-                    ? "danger"
-                    : "outline-danger"
-                }
-                style={{
-                  height: "50px",
-                }}
+                checked={type === "debit"}
+                onChange={(e) => setType(e.currentTarget.value)}
+                variant={type === "debit" ? "danger" : "outline-danger"}
               >
                 Debit
               </ToggleButton>
@@ -148,35 +111,19 @@ function TransactionForm({
                 id="credit"
                 type="radio"
                 value="credit"
-                checked={
-                  type === "credit"
-                }
-                onChange={(e) =>
-                  setType(
-                    e.currentTarget.value
-                  )
-                }
-                variant={
-                  type === "credit"
-                    ? "success"
-                    : "outline-success"
-                }
-                style={{
-                  height: "50px",
-                }}
+                checked={type === "credit"}
+                onChange={(e) => setType(e.currentTarget.value)}
+                variant={type === "credit" ? "success" : "outline-success"}
               >
                 Credit
               </ToggleButton>
             </ButtonGroup>
           </Form.Group>
 
-          {/* Date */}
-
           <Form.Group className="mb-4">
             <Form.Label
               style={{
-                fontFamily:
-                  "EB Garamond",
+                fontFamily: "EB Garamond",
                 fontSize: "1.2rem",
                 color: "#475569",
               }}
@@ -187,25 +134,14 @@ function TransactionForm({
             <Form.Control
               type="date"
               value={date}
-              onChange={(e) =>
-                setDate(
-                  e.target.value
-                )
-              }
-              style={{
-                borderRadius: "14px",
-                height: "50px",
-              }}
+              onChange={(e) => setDate(e.target.value)}
             />
           </Form.Group>
-
-          {/* Description */}
 
           <Form.Group className="mb-4">
             <Form.Label
               style={{
-                fontFamily:
-                  "EB Garamond",
+                fontFamily: "EB Garamond",
                 fontSize: "1.2rem",
                 color: "#475569",
               }}
@@ -217,27 +153,55 @@ function TransactionForm({
               type="text"
               placeholder="Groceries, Rent, Transport..."
               value={description}
-              onChange={(e) =>
-                setDescription(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-4">
+            <Form.Label
               style={{
-                borderRadius: "14px",
-                height: "50px",
+                fontFamily: "EB Garamond",
+                fontSize: "1.2rem",
+                color: "#475569",
+              }}
+            >
+              Category
+            </Form.Label>
+
+            <Form.Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option>Grocery</option>
+              <option>Transport</option>
+              <option>Food</option>
+              <option>Recharge</option>
+              <option>Education</option>
+              <option>Entertainment</option>
+              <option>Healthcare</option>
+              <option>Other</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-4">
+            <Form.Check
+              type="switch"
+              id="recurring-switch"
+              label="Recurring Transaction"
+              checked={recurring}
+              onChange={(e) => setRecurring(e.target.checked)}
+              style={{
+                fontFamily: "EB Garamond",
+                fontSize: "1.1rem",
               }}
             />
           </Form.Group>
 
-          {/* Quick Categories */}
-
           <div className="mb-4">
             <p
               style={{
-                fontFamily:
-                  "EB Garamond",
+                fontFamily: "EB Garamond",
                 color: "#64748B",
-                marginBottom: "12px",
               }}
             >
               Quick Categories
@@ -256,21 +220,7 @@ function TransactionForm({
                   key={item}
                   type="button"
                   variant="light"
-                  onClick={() =>
-                    setDescription(
-                      item
-                    )
-                  }
-                  style={{
-                    borderRadius:
-                      "30px",
-                    border:
-                      "1px solid #CBD5E1",
-                    fontFamily:
-                      "EB Garamond",
-                    padding:
-                      "8px 16px",
-                  }}
+                  onClick={() => setDescription(item)}
                 >
                   {item}
                 </Button>
@@ -278,19 +228,15 @@ function TransactionForm({
             </div>
           </div>
 
-          {/* Submit */}
-
           <Button
             type="submit"
             className="w-100"
             style={{
-              background:
-                "linear-gradient(135deg,#60A5FA,#2563EB)",
+              background: "linear-gradient(135deg,#60A5FA,#2563EB)",
               border: "none",
               height: "55px",
               borderRadius: "14px",
-              fontFamily:
-                "EB Garamond",
+              fontFamily: "EB Garamond",
               fontSize: "1.2rem",
               fontWeight: "600",
             }}

@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Form, Modal } from "react-bootstrap";
+import {
+  Container,
+  Button,
+  Form,
+  Modal,
+  Card,
+  ProgressBar,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FaHistory } from "react-icons/fa";
 
@@ -30,7 +37,7 @@ function Dashboard() {
     const income = localStorage.getItem("monthlyIncome");
 
     if (!income) {
-      navigate("/setup");
+      navigate("/setupbudget");
       return;
     }
 
@@ -92,6 +99,13 @@ function Dashboard() {
 
   const remainingBalance = totalIncome - totalSpent;
 
+  const recurringTransactions = transactions.filter(
+    (transaction) => transaction.recurring === true,
+  );
+
+  const budgetUsed =
+    totalIncome > 0 ? Math.min((totalSpent / totalIncome) * 100, 100) : 0;
+
   return (
     <div
       style={{
@@ -100,8 +114,10 @@ function Dashboard() {
         paddingBottom: "90px",
       }}
     >
-      <Container className="py-4">
-        <div className="text-center mb-4">
+      {" "}
+      <Container>
+        {" "}
+        <div className="text-center py-4">
           <h1
             style={{
               fontFamily: "Croissant One",
@@ -109,9 +125,8 @@ function Dashboard() {
               fontSize: "3rem",
             }}
           >
-            Spendee
+            Spendee{" "}
           </h1>
-
           <p
             style={{
               fontFamily: "EB Garamond",
@@ -123,9 +138,30 @@ function Dashboard() {
           </p>
         </div>
         <BottomNavigation />
-        {/* Balance */}
         <BalanceCard remainingBalance={remainingBalance} />
-        {/* New Month */}
+        <Card
+          className="border-0 shadow-sm mb-4"
+          style={{
+            borderRadius: "20px",
+          }}
+        >
+          <Card.Body>
+            <div className="d-flex justify-content-between mb-2">
+              <span>Budget Used</span>
+
+              <span>{budgetUsed.toFixed(0)}%</span>
+            </div>
+
+            <ProgressBar
+              now={budgetUsed}
+              variant={budgetUsed > 80 ? "danger" : "success"}
+              style={{
+                height: "12px",
+                borderRadius: "20px",
+              }}
+            />
+          </Card.Body>
+        </Card>
         {canStartNewMonth && (
           <div className="text-center mb-4">
             <Button
@@ -136,11 +172,36 @@ function Dashboard() {
             </Button>
           </div>
         )}
-        {/* Warning */}
         <WarningBanner remainingBalance={remainingBalance} />
-        {/* Summary */}
+        {recurringTransactions.length > 0 && (
+          <Card
+            className="border-0 shadow-sm mb-4"
+            style={{
+              borderRadius: "20px",
+              background: "linear-gradient(135deg,#EFF6FF,#DBEAFE)",
+            }}
+          >
+            <Card.Body>
+              <h5
+                style={{
+                  color: "#2563EB",
+                  fontFamily: "Croissant One",
+                }}
+              >
+                Upcoming Recurring Expenses
+              </h5>
+
+              {recurringTransactions.map((item) => (
+                <div key={item.id} className="d-flex justify-content-between">
+                  <span>{item.description}</span>
+
+                  <strong>₹{item.amount}</strong>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+        )}
         <SummaryCards totalIncome={totalIncome} totalSpent={totalSpent} />
-        {/* History Button */}
         <div className="d-flex justify-content-center mt-5 mb-4">
           <Button
             onClick={() => setShowHistory(true)}
@@ -160,15 +221,12 @@ function Dashboard() {
             <span>Recent Activity</span>
           </Button>
         </div>
-
-        {/* Add Transaction */}
         <FloatingButton onClick={() => setShowModal(true)} />
         <TransactionModal
           show={showModal}
           handleClose={() => setShowModal(false)}
           addTransaction={addTransaction}
         />
-        {/* Recent Activity Modal */}
         <Modal
           show={showHistory}
           onHide={() => setShowHistory(false)}
@@ -198,10 +256,6 @@ function Dashboard() {
           <Modal.Footer>
             <Button
               variant="outline-primary"
-              style={{
-                fontFamily: "EB Garamond",
-                borderRadius: "12px",
-              }}
               onClick={() => {
                 setShowHistory(false);
                 navigate("/ledger");
@@ -210,19 +264,11 @@ function Dashboard() {
               View Full Ledger
             </Button>
 
-            <Button
-              variant="secondary"
-              style={{
-                fontFamily: "EB Garamond",
-                borderRadius: "12px",
-              }}
-              onClick={() => setShowHistory(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowHistory(false)}>
               Close
             </Button>
           </Modal.Footer>
         </Modal>
-        {/* Month Reset Modal */}
         <Modal
           show={showMonthResetModal}
           onHide={() => setShowMonthResetModal(false)}
@@ -241,13 +287,7 @@ function Dashboard() {
 
           <Modal.Body>
             <Form.Group>
-              <Form.Label
-                style={{
-                  fontFamily: "EB Garamond",
-                }}
-              >
-                New Month Income
-              </Form.Label>
+              <Form.Label>New Month Income</Form.Label>
 
               <Form.Control
                 type="number"
@@ -256,16 +296,6 @@ function Dashboard() {
                 onChange={(e) => setNewMonthIncome(e.target.value)}
               />
             </Form.Group>
-
-            <small
-              className="text-muted"
-              style={{
-                fontFamily: "EB Garamond",
-              }}
-            >
-              This will reset all transactions and start a fresh month with the
-              new income.
-            </small>
           </Modal.Body>
 
           <Modal.Footer>

@@ -6,6 +6,8 @@ import {
   FaArrowDown,
   FaArrowUp,
   FaFileAlt,
+  FaTags,
+  FaSyncAlt,
 } from "react-icons/fa";
 
 import EmptyState from "../components/common/EmptyState";
@@ -55,6 +57,25 @@ function Reports() {
 
   const remainingBalance = totalIncome - debitAmount;
 
+  const recurringTransactions = filteredTransactions.filter(
+    (transaction) => transaction.recurring,
+  );
+
+  const categoryTotals = {};
+
+  filteredTransactions
+    .filter((transaction) => transaction.type === "debit")
+    .forEach((transaction) => {
+      const category = transaction.category || "Other";
+
+      categoryTotals[category] =
+        (categoryTotals[category] || 0) + Number(transaction.amount);
+    });
+
+  const topCategory = Object.entries(categoryTotals).sort(
+    (a, b) => b[1] - a[1],
+  )[0];
+
   return (
     <div
       style={{
@@ -63,9 +84,9 @@ function Reports() {
         padding: "30px 0 100px",
       }}
     >
+      {" "}
       <Container>
-        {/* App Title */}
-
+        {" "}
         <div className="text-center mb-4">
           <h1
             style={{
@@ -75,7 +96,7 @@ function Reports() {
               marginBottom: "8px",
             }}
           >
-            Spendee
+            Spendee{" "}
           </h1>
 
           <p
@@ -89,11 +110,7 @@ function Reports() {
             Track easily. Spend wisely.
           </p>
         </div>
-
         <BottomNavigation />
-
-        {/* Month Filter */}
-
         <Card
           className="border-0 shadow-sm mb-4"
           style={{
@@ -107,7 +124,6 @@ function Reports() {
             />
           </Card.Body>
         </Card>
-
         {filteredTransactions.length === 0 ? (
           <EmptyState
             title="No Reports Available"
@@ -115,8 +131,6 @@ function Reports() {
           />
         ) : (
           <>
-            {/* Financial Reports */}
-
             <Card
               className="border-0 shadow-sm mb-4"
               style={{
@@ -124,7 +138,7 @@ function Reports() {
               }}
             >
               <Card.Body>
-                <div className="d-flex align-items-center justify-content-center gap-2 mb-4">
+                <div className="d-flex justify-content-center align-items-center gap-2 mb-4">
                   <FaChartPie size={22} color="#2563EB" />
 
                   <h3
@@ -145,10 +159,8 @@ function Reports() {
               </Card.Body>
             </Card>
 
-            {/* Summary Cards */}
-
             <Row className="g-4">
-              <Col xs={12} md={4}>
+              <Col md={4}>
                 <Card
                   className="border-0 shadow-sm h-100"
                   style={{
@@ -168,8 +180,8 @@ function Reports() {
 
                     <h2
                       style={{
-                        fontFamily: "EB Garamond",
                         color: "#10B981",
+                        fontFamily: "EB Garamond",
                       }}
                     >
                       ₹ {formatCurrency(totalIncome)}
@@ -178,7 +190,7 @@ function Reports() {
                 </Card>
               </Col>
 
-              <Col xs={12} md={4}>
+              <Col md={4}>
                 <Card
                   className="border-0 shadow-sm h-100"
                   style={{
@@ -198,8 +210,8 @@ function Reports() {
 
                     <h2
                       style={{
-                        fontFamily: "EB Garamond",
                         color: "#EF4444",
+                        fontFamily: "EB Garamond",
                       }}
                     >
                       ₹ {formatCurrency(debitAmount)}
@@ -208,7 +220,7 @@ function Reports() {
                 </Card>
               </Col>
 
-              <Col xs={12} md={4}>
+              <Col md={4}>
                 <Card
                   className="border-0 shadow-sm h-100"
                   style={{
@@ -228,8 +240,8 @@ function Reports() {
 
                     <h2
                       style={{
-                        fontFamily: "EB Garamond",
                         color: "#2563EB",
+                        fontFamily: "EB Garamond",
                       }}
                     >
                       ₹ {formatCurrency(remainingBalance)}
@@ -238,8 +250,6 @@ function Reports() {
                 </Card>
               </Col>
             </Row>
-
-            {/* Report Summary */}
 
             <Card
               className="border-0 shadow-sm mt-4"
@@ -262,21 +272,9 @@ function Reports() {
                   </h4>
                 </div>
 
-                <p
-                  style={{
-                    fontFamily: "EB Garamond",
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  Total Transactions: {filteredTransactions.length}
-                </p>
+                <p>Total Transactions: {filteredTransactions.length}</p>
 
-                <p
-                  style={{
-                    fontFamily: "EB Garamond",
-                    fontSize: "1.1rem",
-                  }}
-                >
+                <p>
                   Credits Recorded:{" "}
                   {
                     filteredTransactions.filter(
@@ -285,12 +283,7 @@ function Reports() {
                   }
                 </p>
 
-                <p
-                  style={{
-                    fontFamily: "EB Garamond",
-                    fontSize: "1.1rem",
-                  }}
-                >
+                <p>
                   Debits Recorded:{" "}
                   {
                     filteredTransactions.filter(
@@ -298,6 +291,49 @@ function Reports() {
                     ).length
                   }
                 </p>
+
+                <p>
+                  <FaSyncAlt className="me-2" />
+                  Recurring Transactions: {recurringTransactions.length}
+                </p>
+
+                {topCategory && (
+                  <p>
+                    <FaTags className="me-2" />
+                    Top Spending Category: <strong>{topCategory[0]}</strong>
+                    {" - "}₹ {formatCurrency(topCategory[1])}
+                  </p>
+                )}
+              </Card.Body>
+            </Card>
+
+            <Card
+              className="border-0 shadow-sm mt-4"
+              style={{
+                borderRadius: "24px",
+              }}
+            >
+              <Card.Body>
+                <h4
+                  style={{
+                    fontFamily: "Croissant One",
+                    color: "#2563EB",
+                    marginBottom: "20px",
+                  }}
+                >
+                  Category Breakdown
+                </h4>
+
+                {Object.entries(categoryTotals).map(([category, amount]) => (
+                  <div
+                    key={category}
+                    className="d-flex justify-content-between mb-2"
+                  >
+                    <span>{category}</span>
+
+                    <strong>₹ {formatCurrency(amount)}</strong>
+                  </div>
+                ))}
               </Card.Body>
             </Card>
           </>

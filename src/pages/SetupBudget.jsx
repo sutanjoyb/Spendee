@@ -16,17 +16,16 @@ function SetupBudget() {
     }
 
     localStorage.setItem("monthlyIncome", budget);
+    localStorage.setItem("budget", budget);
 
-    localStorage.setItem("transactions", JSON.stringify([]));
+    if (!localStorage.getItem("transactions")) {
+      localStorage.setItem("transactions", JSON.stringify([]));
+    }
 
     localStorage.setItem(
       "lastResetMonth",
       `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
     );
-
-    navigate("/dashboard");
-
-    localStorage.setItem("budget", budget);
 
     navigate("/dashboard");
   };

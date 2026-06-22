@@ -4,30 +4,45 @@ import SetupBudget from "./pages/SetupBudget";
 import Dashboard from "./pages/Dashboard";
 import Ledger from "./pages/Ledger";
 import Reports from "./pages/Reports";
+
 import { FinanceProvider } from "./context/FinanceContext";
 
 function App() {
+  const hasBudget = localStorage.getItem("monthlyIncome");
+
   return (
     <BrowserRouter>
       <FinanceProvider>
         <Routes>
-          {/* Default Route */}
-
-          <Route path="/" element={<Navigate to="/setup" replace />} />
+          {/* Home Route */}
+          <Route
+            path="/"
+            element={
+              hasBudget ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/setup" replace />
+              )
+            }
+          />
 
           {/* Pages */}
-
           <Route path="/setup" element={<SetupBudget />} />
-
           <Route path="/dashboard" element={<Dashboard />} />
-
           <Route path="/ledger" element={<Ledger />} />
-
           <Route path="/reports" element={<Reports />} />
 
           {/* Invalid Routes */}
-
-          <Route path="*" element={<Navigate to="/setup" replace />} />
+          <Route
+            path="*"
+            element={
+              hasBudget ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/setup" replace />
+              )
+            }
+          />
         </Routes>
       </FinanceProvider>
     </BrowserRouter>
